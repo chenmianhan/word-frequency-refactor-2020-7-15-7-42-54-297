@@ -14,25 +14,7 @@ public class WordFrequencyGame {
 
             try {
 
-
-                String[] words = sentence.split(SPACE_PATTERN);
-
-                List<WordInfo> wordInfos = new ArrayList<>();
-                for (String word : words) {
-                    WordInfo wordInfo = new WordInfo(word, 1);
-                    wordInfos.add(wordInfo);
-                }
-
-
-                Map<String, List<WordInfo>> map = getListMap(wordInfos);
-
-                List<WordInfo> list = new ArrayList<>();
-                for (Map.Entry<String, List<WordInfo>> entry : map.entrySet()) {
-                    WordInfo wordInfo = new WordInfo(entry.getKey(), entry.getValue().size());
-                    list.add(wordInfo);
-                }
-                wordInfos = list;
-
+                List<WordInfo> wordInfos = calculateWordFrequency(sentence);
                 wordInfos.sort((firstWordInfo, secondWordInfo) -> secondWordInfo.getWordCount() - firstWordInfo.getWordCount());
 
                 return generateWordFrequencyResult(wordInfos);
@@ -40,6 +22,18 @@ public class WordFrequencyGame {
                 return CALCULATE_ERROR;
             }
         }
+    }
+
+    private List<WordInfo> calculateWordFrequency(String sentence) {
+
+        List<String> words = Arrays.asList(sentence.split(SPACE_PATTERN));
+        List<WordInfo> wordInfos = new LinkedList<>();
+        for (String uniqueWord : new HashSet<>(words)) {
+            int count = (int) words.stream().filter(word -> word.equals(uniqueWord)).count();
+            wordInfos.add(new WordInfo(uniqueWord, count));
+        }
+        return wordInfos;
+
     }
 
     private String generateWordFrequencyResult(List<WordInfo> wordInfos) {
@@ -51,17 +45,4 @@ public class WordFrequencyGame {
         return joiner.toString();
     }
 
-    private Map<String, List<WordInfo>> getListMap(List<WordInfo> wordInfoList) {
-        Map<String, List<WordInfo>> map = new HashMap<>();
-        for (WordInfo wordInfo : wordInfoList) {
-            if (!map.containsKey(wordInfo.getValue())) {
-                ArrayList arr = new ArrayList<>();
-                arr.add(wordInfo);
-                map.put(wordInfo.getValue(), arr);
-            } else {
-                map.get(wordInfo.getValue()).add(wordInfo);
-            }
-        }
-        return map;
-    }
 }
